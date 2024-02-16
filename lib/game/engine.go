@@ -15,12 +15,12 @@ func init() {
 }
 
 type Engine struct {
-	Database *db.Database
+	Db *db.Database
 }
 
 func NewEngine() *Engine {
 	return &Engine{
-		Database: db.NewDatabase("file:data/map.db?cache=shared&mode=rwc"),
+		Db: db.NewDatabase("file:data/map.db?cache=shared&mode=rwc"),
 	}
 }
 
@@ -28,7 +28,7 @@ func (e *Engine) Run() {
 	if err := ebiten.RunGame(e); err != nil {
 		log.Fatal(err)
 	}
-	e.Database.Connection.Close()
+	e.Db.Connection.Close()
 }
 
 func (e *Engine) Update() error {
