@@ -28,7 +28,7 @@ func LoadImage(path string) *ebiten.Image {
 }
 
 func LoadTestTiles() []*Tile {
-	blankTile := NewTile(
+	blankTile1 := NewTile(
 		"blank",
 		LoadImage("tile/blank.png"),
 		NewEdge("grass"),
@@ -37,7 +37,88 @@ func LoadTestTiles() []*Tile {
 		NewEdge("grass"),
 	)
 
-	horizontalRoadTile := NewTile(
+	blankTile2 := NewTile(
+		"blank",
+		LoadImage("tile/blank.png"),
+		NewEdge("grass"),
+		NewEdge("grass"),
+		NewEdge("grass"),
+		NewEdge("grass"),
+	)
+
+	blankTile3 := NewTile(
+		"blank",
+		LoadImage("tile/blank.png"),
+		NewEdge("grass"),
+		NewEdge("grass"),
+		NewEdge("grass"),
+		NewEdge("grass"),
+	)
+
+	blankTile4 := NewTile(
+		"blank",
+		LoadImage("tile/blank.png"),
+		NewEdge("grass"),
+		NewEdge("grass"),
+		NewEdge("grass"),
+		NewEdge("grass"),
+	)
+
+	blankTile5 := NewTile(
+		"blank",
+		LoadImage("tile/blank.png"),
+		NewEdge("grass"),
+		NewEdge("grass"),
+		NewEdge("grass"),
+		NewEdge("grass"),
+	)
+
+	blankTile6 := NewTile(
+		"blank",
+		LoadImage("tile/blank.png"),
+		NewEdge("grass"),
+		NewEdge("grass"),
+		NewEdge("grass"),
+		NewEdge("grass"),
+	)
+
+	blankTile7 := NewTile(
+		"blank",
+		LoadImage("tile/blank.png"),
+		NewEdge("grass"),
+		NewEdge("grass"),
+		NewEdge("grass"),
+		NewEdge("grass"),
+	)
+
+	blankTile8 := NewTile(
+		"blank",
+		LoadImage("tile/blank.png"),
+		NewEdge("grass"),
+		NewEdge("grass"),
+		NewEdge("grass"),
+		NewEdge("grass"),
+	)
+
+	blankTile9 := NewTile(
+		"blank",
+		LoadImage("tile/blank.png"),
+		NewEdge("grass"),
+		NewEdge("grass"),
+		NewEdge("grass"),
+		NewEdge("grass"),
+	)
+
+	blankTile10 := NewTile(
+		"blank",
+		LoadImage("tile/blank.png"),
+		NewEdge("grass"),
+		NewEdge("grass"),
+		NewEdge("grass"),
+		NewEdge("grass"),
+	)
+
+	horizontalRoadTile1 := NewTile(
 		"horizontal-road",
 		LoadImage("tile/horizontal.png"),
 		NewEdge("grass"),
@@ -46,7 +127,79 @@ func LoadTestTiles() []*Tile {
 		NewEdge("road"),
 	)
 
-	verticalRoadTile := NewTile(
+	horizontalRoadTile2 := NewTile(
+		"horizontal-road",
+		LoadImage("tile/horizontal.png"),
+		NewEdge("grass"),
+		NewEdge("road"),
+		NewEdge("grass"),
+		NewEdge("road"),
+	)
+
+	horizontalRoadTile3 := NewTile(
+		"horizontal-road",
+		LoadImage("tile/horizontal.png"),
+		NewEdge("grass"),
+		NewEdge("road"),
+		NewEdge("grass"),
+		NewEdge("road"),
+	)
+
+	horizontalRoadTile4 := NewTile(
+		"horizontal-road",
+		LoadImage("tile/horizontal.png"),
+		NewEdge("grass"),
+		NewEdge("road"),
+		NewEdge("grass"),
+		NewEdge("road"),
+	)
+
+	horizontalRoadTile5 := NewTile(
+		"horizontal-road",
+		LoadImage("tile/horizontal.png"),
+		NewEdge("grass"),
+		NewEdge("road"),
+		NewEdge("grass"),
+		NewEdge("road"),
+	)
+
+	verticalRoadTile1 := NewTile(
+		"vertical-road",
+		LoadImage("tile/vertical.png"),
+		NewEdge("road"),
+		NewEdge("grass"),
+		NewEdge("road"),
+		NewEdge("grass"),
+	)
+
+	verticalRoadTile2 := NewTile(
+		"vertical-road",
+		LoadImage("tile/vertical.png"),
+		NewEdge("road"),
+		NewEdge("grass"),
+		NewEdge("road"),
+		NewEdge("grass"),
+	)
+
+	verticalRoadTile3 := NewTile(
+		"vertical-road",
+		LoadImage("tile/vertical.png"),
+		NewEdge("road"),
+		NewEdge("grass"),
+		NewEdge("road"),
+		NewEdge("grass"),
+	)
+
+	verticalRoadTile4 := NewTile(
+		"vertical-road",
+		LoadImage("tile/vertical.png"),
+		NewEdge("road"),
+		NewEdge("grass"),
+		NewEdge("road"),
+		NewEdge("grass"),
+	)
+
+	verticalRoadTile5 := NewTile(
 		"vertical-road",
 		LoadImage("tile/vertical.png"),
 		NewEdge("road"),
@@ -92,9 +245,26 @@ func LoadTestTiles() []*Tile {
 	)
 
 	tiles := []*Tile{
-		&blankTile,
-		&horizontalRoadTile,
-		&verticalRoadTile,
+		&blankTile1,
+		&blankTile2,
+		&blankTile3,
+		&blankTile4,
+		&blankTile5,
+		&blankTile6,
+		&blankTile7,
+		&blankTile8,
+		&blankTile9,
+		&blankTile10,
+		&horizontalRoadTile1,
+		&horizontalRoadTile2,
+		&horizontalRoadTile3,
+		&horizontalRoadTile4,
+		&horizontalRoadTile5,
+		&verticalRoadTile1,
+		&verticalRoadTile2,
+		&verticalRoadTile3,
+		&verticalRoadTile4,
+		&verticalRoadTile5,
 		&bottomLeftRoadTile,
 		&bottomRightRoadTile,
 		&topLeftRoadTile,
@@ -258,6 +428,19 @@ func LoadTiles() []*Tile {
 		&grassTopLeft,
 		&grassTopRight,
 		&grassTop,
+		&grass,
+		&grass,
+		&grass,
+		&grass,
+		&grass,
+		&grass,
+		&grass,
+		&grass,
+		&grass,
+		&grass,
+		&grass,
+		&grass,
+		&grass,
 		&grass,
 		&sandBottomLeft,
 		&sandBottomRight,

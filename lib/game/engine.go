@@ -76,8 +76,7 @@ func (e *Engine) Update() error {
 	// if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
 	_, _, err := e.CollapseArray.Iterate()
 	if err != nil {
-		wa := wfc.NewCollapseArray2d(e.TileMap.Width, e.TileMap.Height, assets.LoadTiles())
-		e.CollapseArray = wa
+		log.Println(err)
 	}
 	// }
 
