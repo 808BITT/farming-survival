@@ -40,7 +40,7 @@ func NewEngine() *Engine {
 	// tiles := assets.LoadTiles()
 
 	ebiten.SetFullscreen(true)
-	width, height := 1920, 1080
+	width, height := 1920*2, 1080*2
 
 	wa := wfc.NewCollapseArray2d(width/16, height/16, tiles)
 	// var x, y int
@@ -53,7 +53,7 @@ func NewEngine() *Engine {
 	// 		break
 	// 	}
 	// }
-	wa.Set(60, 30, tiles[0])
+	// wa.Set(60, 30, tiles[0])
 
 	return &Engine{
 		screenWidth:   width,
@@ -76,7 +76,8 @@ func (e *Engine) Update() error {
 	// if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
 	_, _, err := e.CollapseArray.Iterate()
 	if err != nil {
-		log.Println(err)
+		// e.CollapseArray = wfc.NewCollapseArray2d(e.screenWidth/16, e.screenHeight/16, assets.LoadTiles())
+		log.Println(err.Error())
 	}
 	// }
 

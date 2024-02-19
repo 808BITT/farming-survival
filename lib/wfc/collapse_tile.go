@@ -5,13 +5,13 @@ import (
 )
 
 type CollapseTile struct {
-	Tile     *assets.Tile
-	Possible []*assets.Tile
+	Tile          *assets.Tile
+	PossibleTiles []*assets.Tile
 }
 
 func NewCollapseTile(tile *assets.Tile) *CollapseTile {
 	return &CollapseTile{
-		Tile:     tile,
-		Possible: nil,
+		Tile:          tile,
+		PossibleTiles: nil,
 	}
 }

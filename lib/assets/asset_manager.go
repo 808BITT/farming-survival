@@ -365,7 +365,7 @@ func LoadTiles() []*Tile {
 		NewEdge("grass-sand"),
 	)
 
-	grass := NewTile(
+	grass1 := NewTile(
 		"grass",
 		LoadImage("tile/cozy-farm/grass.png"),
 		NewEdge("grass"),
@@ -374,50 +374,130 @@ func LoadTiles() []*Tile {
 		NewEdge("grass"),
 	)
 
-	sandBottomLeft := NewTile(
-		"sand-bottom-left",
-		LoadImage("tile/cozy-farm/sand_bottom_left.png"),
+	grass2 := NewTile(
+		"grass",
+		LoadImage("tile/cozy-farm/grass.png"),
 		NewEdge("grass"),
 		NewEdge("grass"),
-		NewEdge("sand-grass"),
-		NewEdge("grass-sand"),
-	)
-
-	sandBottomRight := NewTile(
-		"sand-bottom-right",
-		LoadImage("tile/cozy-farm/sand_bottom_right.png"),
-		NewEdge("grass"),
-		NewEdge("grass-sand"),
-		NewEdge("grass-sand"),
-		NewEdge("grass"),
-	)
-
-	sandTopLeft := NewTile(
-		"sand-top-left",
-		LoadImage("tile/cozy-farm/sand_top_left.png"),
-		NewEdge("sand-grass"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-		NewEdge("sand-grass"),
-	)
-
-	sandTopRight := NewTile(
-		"sand-top-right",
-		LoadImage("tile/cozy-farm/sand_top_right.png"),
-		NewEdge("grass-sand"),
-		NewEdge("sand-grass"),
 		NewEdge("grass"),
 		NewEdge("grass"),
 	)
 
-	sand := NewTile(
-		"sand",
-		LoadImage("tile/cozy-farm/sand.png"),
-		NewEdge("sand"),
-		NewEdge("sand"),
-		NewEdge("sand"),
-		NewEdge("sand"),
+	grass3 := NewTile(
+		"grass",
+		LoadImage("tile/cozy-farm/grass.png"),
+		NewEdge("grass"),
+		NewEdge("grass"),
+		NewEdge("grass"),
+		NewEdge("grass"),
 	)
+
+	grass4 := NewTile(
+		"grass",
+		LoadImage("tile/cozy-farm/grass.png"),
+		NewEdge("grass"),
+		NewEdge("grass"),
+		NewEdge("grass"),
+		NewEdge("grass"),
+	)
+
+	grass5 := NewTile(
+		"grass",
+		LoadImage("tile/cozy-farm/grass.png"),
+		NewEdge("grass"),
+		NewEdge("grass"),
+		NewEdge("grass"),
+		NewEdge("grass"),
+	)
+
+	grass6 := NewTile(
+		"grass",
+		LoadImage("tile/cozy-farm/grass.png"),
+		NewEdge("grass"),
+		NewEdge("grass"),
+		NewEdge("grass"),
+		NewEdge("grass"),
+	)
+
+	grass7 := NewTile(
+		"grass",
+		LoadImage("tile/cozy-farm/grass.png"),
+		NewEdge("grass"),
+		NewEdge("grass"),
+		NewEdge("grass"),
+		NewEdge("grass"),
+	)
+
+	grass8 := NewTile(
+		"grass",
+		LoadImage("tile/cozy-farm/grass.png"),
+		NewEdge("grass"),
+		NewEdge("grass"),
+		NewEdge("grass"),
+		NewEdge("grass"),
+	)
+
+	grass9 := NewTile(
+		"grass",
+		LoadImage("tile/cozy-farm/grass.png"),
+		NewEdge("grass"),
+		NewEdge("grass"),
+		NewEdge("grass"),
+		NewEdge("grass"),
+	)
+
+	grass10 := NewTile(
+		"grass",
+		LoadImage("tile/cozy-farm/grass.png"),
+		NewEdge("grass"),
+		NewEdge("grass"),
+		NewEdge("grass"),
+		NewEdge("grass"),
+	)
+	// sandBottomLeft := NewTile(
+	// 	"sand-bottom-left",
+	// 	LoadImage("tile/cozy-farm/sand_bottom_left.png"),
+	// 	NewEdge("grass"),
+	// 	NewEdge("grass"),
+	// 	NewEdge("sand-grass"),
+	// 	NewEdge("grass-sand"),
+	// )
+
+	// sandBottomRight := NewTile(
+	// 	"sand-bottom-right",
+	// 	LoadImage("tile/cozy-farm/sand_bottom_right.png"),
+	// 	NewEdge("grass"),
+	// 	NewEdge("grass-sand"),
+	// 	NewEdge("grass-sand"),
+	// 	NewEdge("grass"),
+	// )
+
+	// sandTopLeft := NewTile(
+	// 	"sand-top-left",
+	// 	LoadImage("tile/cozy-farm/sand_top_left.png"),
+	// 	NewEdge("sand-grass"),
+	// 	NewEdge("grass"),
+	// 	NewEdge("grass"),
+	// 	NewEdge("sand-grass"),
+	// )
+
+	// sandTopRight := NewTile(
+	// 	"sand-top-right",
+	// 	LoadImage("tile/cozy-farm/sand_top_right.png"),
+	// 	NewEdge("grass-sand"),
+	// 	NewEdge("sand-grass"),
+	// 	NewEdge("grass"),
+	// 	NewEdge("grass"),
+	// )
+
+	// sand := NewTile(
+	// 	"sand",
+	// 	LoadImage("tile/cozy-farm/sand.png"),
+	// 	NewEdge("sand"),
+	// 	NewEdge("sand"),
+	// 	NewEdge("sand"),
+	// 	NewEdge("sand"),
+	// )
 
 	tiles := []*Tile{
 		&grassBottomLeft,
@@ -428,25 +508,21 @@ func LoadTiles() []*Tile {
 		&grassTopLeft,
 		&grassTopRight,
 		&grassTop,
-		&grass,
-		&grass,
-		&grass,
-		&grass,
-		&grass,
-		&grass,
-		&grass,
-		&grass,
-		&grass,
-		&grass,
-		&grass,
-		&grass,
-		&grass,
-		&grass,
-		&sandBottomLeft,
-		&sandBottomRight,
-		&sandTopLeft,
-		&sandTopRight,
-		&sand,
+		&grass1,
+		&grass2,
+		&grass3,
+		&grass4,
+		&grass5,
+		&grass6,
+		&grass7,
+		&grass8,
+		&grass9,
+		&grass10,
+		// &sandBottomLeft,
+		// &sandBottomRight,
+		// &sandTopLeft,
+		// &sandTopRight,
+		// &sand,
 	}
 
 	return tiles
