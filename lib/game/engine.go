@@ -40,13 +40,20 @@ func NewEngine() *Engine {
 	// tiles := assets.LoadTiles()
 
 	ebiten.SetFullscreen(true)
-	width, height := 192, 108
+	width, height := 1920, 1080
 
-	wa := wfc.NewCollapseArray2d(width/16, width/16, tiles)
+	wa := wfc.NewCollapseArray2d(width/16, height/16, tiles)
 	// var x, y int
 	// for x != -1 && y != -1 {
-	// 	x, y = wa.Iterate()
+	// 	x, y, err := wa.Iterate()
+	// 	if err != nil {
+	// 		wa = wfc.NewCollapseArray2d(width/16, width/16, tiles)
+	// 	}
+	// 	if x == -1 && y == -1 {
+	// 		break
+	// 	}
 	// }
+	wa.Set(60, 30, tiles[0])
 
 	return &Engine{
 		screenWidth:   width,
@@ -66,20 +73,20 @@ func (e *Engine) Update() error {
 		return errors.New("user quit")
 	}
 
-	if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
-		_, _, err := e.CollapseArray.Iterate()
-		if err != nil {
-			wa := wfc.NewCollapseArray2d(e.TileMap.Width, e.TileMap.Height, assets.LoadTiles())
-			e.CollapseArray = wa
-		}
+	// if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
+	_, _, err := e.CollapseArray.Iterate()
+	if err != nil {
+		wa := wfc.NewCollapseArray2d(e.TileMap.Width, e.TileMap.Height, assets.LoadTiles())
+		e.CollapseArray = wa
 	}
+	// }
 
 	return nil
 }
 
 func (e *Engine) Draw(screen *ebiten.Image) {
-	for y := 0; y < e.CollapseArray.Height(); y++ {
-		for x := 0; x < e.CollapseArray.Width(); x++ {
+	for y := 0; y < e.screenHeight/16; y++ {
+		for x := 0; x < e.screenWidth/16; x++ {
 			tile, err := e.CollapseArray.GetTile(x, y)
 			if err != nil {
 				continue
