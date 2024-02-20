@@ -37,23 +37,20 @@ type TileMap struct {
 
 func NewEngine() *Engine {
 	tiles := assets.LoadTestTiles()
-	// tiles := assets.LoadTiles()
 
 	ebiten.SetFullscreen(true)
 	width, height := 1920*2, 1080*2
 
 	wa := wfc.NewCollapseArray2d(width/16, height/16, tiles)
-	// var x, y int
-	// for x != -1 && y != -1 {
-	// 	x, y, err := wa.Iterate()
-	// 	if err != nil {
-	// 		wa = wfc.NewCollapseArray2d(width/16, width/16, tiles)
-	// 	}
-	// 	if x == -1 && y == -1 {
-	// 		break
-	// 	}
-	// }
-	// wa.Set(60, 30, tiles[0])
+	for {
+		x, y, err := wa.Iterate()
+		if err != nil {
+			log.Println(err.Error())
+		}
+		if x == -1 && y == -1 {
+			break
+		}
+	}
 
 	return &Engine{
 		screenWidth:   width,
@@ -73,13 +70,13 @@ func (e *Engine) Update() error {
 		return errors.New("user quit")
 	}
 
-	// if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
-	_, _, err := e.CollapseArray.Iterate()
-	if err != nil {
-		// e.CollapseArray = wfc.NewCollapseArray2d(e.screenWidth/16, e.screenHeight/16, assets.LoadTiles())
-		log.Println(err.Error())
-	}
+	// // if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
+	// _, _, err := e.CollapseArray.Iterate()
+	// if err != nil {
+	// 	// e.CollapseArray = wfc.NewCollapseArray2d(e.screenWidth/16, e.screenHeight/16, assets.LoadTiles())
+	// 	log.Println(err.Error())
 	// }
+	// // }
 
 	return nil
 }
@@ -93,7 +90,7 @@ func (e *Engine) Draw(screen *ebiten.Image) {
 			}
 			op := &ebiten.DrawImageOptions{}
 			op.GeoM.Translate(float64(x*16), float64(y*16))
-			screen.DrawImage(tile.Img, op)
+			screen.DrawImage(tile.Type.Texture, op)
 		}
 	}
 }

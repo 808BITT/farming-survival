@@ -1,15 +1,13 @@
 package wfc
 
-import (
-	"fs/lib/assets"
-)
+import "fs/lib/tilemap"
 
 type CollapseTile struct {
-	Tile          *assets.Tile
-	PossibleTiles []*assets.Tile
+	Tile          *tilemap.Tile
+	PossibleTiles []*tilemap.Tile
 }
 
-func NewCollapseTile(tile *assets.Tile) *CollapseTile {
+func NewCollapseTile(tile *tilemap.Tile) *CollapseTile {
 	return &CollapseTile{
 		Tile:          tile,
 		PossibleTiles: nil,

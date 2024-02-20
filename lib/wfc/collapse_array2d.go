@@ -2,7 +2,7 @@ package wfc
 
 import (
 	"fmt"
-	"fs/lib/assets"
+	"fs/lib/tilemap"
 	"math/rand"
 )
 
@@ -11,7 +11,29 @@ type CollapseArray2d struct {
 	Tile  [][]*CollapseTile
 }
 
-func (wa *CollapseArray2d) GetTile(x, y int) (*assets.Tile, error) {
+func (wa *CollapseArray2d) IsValid() bool {
+	return *wa.Valid
+}
+
+func (wa *CollapseArray2d) IsCollapsed() bool {
+	if wa.Valid == nil {
+		valid := true
+		for _, row := range wa.Tile {
+			for _, tile := range row {
+				if tile.Tile == nil {
+					if len(tile.PossibleTiles) == 0 {
+						valid = false
+						break
+					}
+				}
+			}
+		}
+		wa.Valid = &valid
+	}
+	return *wa.Valid
+}
+
+func (wa *CollapseArray2d) GetTile(x, y int) (*tilemap.Tile, error) {
 	if x < 0 || x >= wa.Width() || y < 0 || y >= wa.Height() {
 		return nil, fmt.Errorf("out of bounds")
 	}
@@ -31,7 +53,7 @@ func (wa *CollapseArray2d) Height() int {
 	return len(wa.Tile)
 }
 
-func (wa *CollapseArray2d) Set(x, y int, tile *assets.Tile) error {
+func (wa *CollapseArray2d) Set(x, y int, tile *tilemap.Tile) error {
 	// log.Println("Collapsed", x, y, tile.Name)
 	wa.Tile[y][x].Tile = tile
 	wa.Tile[y][x].PossibleTiles = nil
@@ -42,11 +64,11 @@ func (wa *CollapseArray2d) Set(x, y int, tile *assets.Tile) error {
 	return nil
 }
 
-func (wa *CollapseArray2d) SetPossible(x, y int, possible []*assets.Tile) {
+func (wa *CollapseArray2d) SetPossible(x, y int, possible []*tilemap.Tile) {
 	wa.Tile[y][x].PossibleTiles = possible
 }
 
-func (wa *CollapseArray2d) GetPossible(x, y int) ([]*assets.Tile, error) {
+func (wa *CollapseArray2d) GetPossible(x, y int) ([]*tilemap.Tile, error) {
 	if x < 0 || x >= wa.Width() || y < 0 || y >= wa.Height() {
 		return nil, fmt.Errorf("out of bounds")
 	}
@@ -58,7 +80,7 @@ func (wa *CollapseArray2d) GetPossible(x, y int) ([]*assets.Tile, error) {
 	return wa.Tile[y][x].PossibleTiles, nil
 }
 
-func NewCollapseArray2d(width, height int, possible []*assets.Tile) *CollapseArray2d {
+func NewCollapseArray2d(width, height int, possible []*tilemap.Tile) *CollapseArray2d {
 	wa := CollapseArray2d{
 		Tile:  make([][]*CollapseTile, height),
 		Valid: nil,
@@ -96,7 +118,6 @@ func (wa *CollapseArray2d) FindLowestEntropy() (int, int) {
 			if len(tile.PossibleTiles) < entropy && len(tile.PossibleTiles) > 1 {
 				entropy = len(tile.PossibleTiles)
 				x, y = j, i
-				// log.Println("Entropy", x, y, entropy)
 			}
 		}
 	}
@@ -113,8 +134,9 @@ func (wa *CollapseArray2d) Collapse(x, y int) error {
 			return err
 		}
 	} else {
-		index := rand.Intn(possible)
-		err := wa.Set(x, y, tile.PossibleTiles[index])
+		// i need to use the probability of the tiles to determine the random tile
+		randomTile := randomTileFromProbablilities(tile.PossibleTiles)
+		err := wa.Set(x, y, randomTile)
 		if err != nil {
 			return err
 		}
@@ -122,12 +144,36 @@ func (wa *CollapseArray2d) Collapse(x, y int) error {
 	return nil
 }
 
+func randomTileFromProbablilities(tiles []*tilemap.Tile) *tilemap.Tile {
+	p := 0.0
+	for _, t := range tiles {
+		p += t.Probability
+	}
+	r := rand.Float64() * p
+	shuffledTiles := shuffleTiles(tiles)
+	for _, t := range shuffledTiles {
+		r -= t.Probability
+		if r <= 0 {
+			return t
+		}
+	}
+	return tiles[0]
+}
+
+func shuffleTiles(tiles []*tilemap.Tile) []*tilemap.Tile {
+	for i := range tiles {
+		j := rand.Intn(i + 1)
+		tiles[i], tiles[j] = tiles[j], tiles[i]
+	}
+	return tiles
+}
+
 // Recursively update the possible tiles for the neighbors of the collapsed tile
 func (wa *CollapseArray2d) UpdatePossible(x, y int) error {
 	if wa.Tile[y][x].Tile != nil {
 		if x > 0 { // update west
 			if wa.Tile[y][x-1].Tile == nil {
-				err := wa.updateNeighborPossible(x-1, y, wa.Tile[y][x].Tile.West, "east")
+				err := wa.updateNeighborPossible(x-1, y, wa.Tile[y][x].Tile.Type.Edge.West(), "east")
 				if err != nil {
 					return err
 				}
@@ -136,7 +182,7 @@ func (wa *CollapseArray2d) UpdatePossible(x, y int) error {
 
 		if x < wa.Width()-1 { // update east
 			if wa.Tile[y][x+1].Tile == nil {
-				err := wa.updateNeighborPossible(x+1, y, wa.Tile[y][x].Tile.East, "west")
+				err := wa.updateNeighborPossible(x+1, y, wa.Tile[y][x].Tile.Type.Edge.East(), "west")
 				if err != nil {
 					return err
 				}
@@ -145,7 +191,7 @@ func (wa *CollapseArray2d) UpdatePossible(x, y int) error {
 
 		if y > 0 { // update north
 			if wa.Tile[y-1][x].Tile == nil {
-				err := wa.updateNeighborPossible(x, y-1, wa.Tile[y][x].Tile.North, "south")
+				err := wa.updateNeighborPossible(x, y-1, wa.Tile[y][x].Tile.Type.Edge.North(), "south")
 				if err != nil {
 					return err
 				}
@@ -154,7 +200,7 @@ func (wa *CollapseArray2d) UpdatePossible(x, y int) error {
 
 		if y < wa.Height()-1 { // update south
 			if wa.Tile[y+1][x].Tile == nil {
-				err := wa.updateNeighborPossible(x, y+1, wa.Tile[y][x].Tile.South, "north")
+				err := wa.updateNeighborPossible(x, y+1, wa.Tile[y][x].Tile.Type.Edge.South(), "north")
 				if err != nil {
 					return err
 				}
@@ -164,25 +210,25 @@ func (wa *CollapseArray2d) UpdatePossible(x, y int) error {
 	return nil
 }
 
-func (ca *CollapseArray2d) updateNeighborPossible(x, y int, otherEdge assets.Edge, compareDirection assets.Edge) error {
-	newPossible := []*assets.Tile{}
+func (ca *CollapseArray2d) updateNeighborPossible(x, y int, otherEdge string, neighborDir string) error {
+	newPossible := []*tilemap.Tile{}
 
 	for _, tile := range ca.Tile[y][x].PossibleTiles {
-		var edge assets.Edge
+		var matchingEdge string
 		stillPossible := false
 
 		// Compare the edge of the neighbor to the edge of the collapsed tile in the compare direction
-		switch compareDirection {
+		switch neighborDir {
 		case "east":
-			edge = tile.East
+			matchingEdge = tile.Type.Edge.East()
 		case "west":
-			edge = tile.West
+			matchingEdge = tile.Type.Edge.West()
 		case "north":
-			edge = tile.North
+			matchingEdge = tile.Type.Edge.North()
 		case "south":
-			edge = tile.South
+			matchingEdge = tile.Type.Edge.South()
 		}
-		if edge == otherEdge {
+		if matchingEdge == otherEdge {
 			stillPossible = true
 		}
 

@@ -2,6 +2,7 @@ package assets
 
 import (
 	"embed"
+	"fs/lib/tilemap"
 	"image/png"
 	"log"
 
@@ -27,502 +28,70 @@ func LoadImage(path string) *ebiten.Image {
 	return image
 }
 
-func LoadTestTiles() []*Tile {
-	blankTile1 := NewTile(
-		"blank",
-		LoadImage("tile/blank.png"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-	)
+func LoadTestTiles() []*tilemap.Tile {
+	blankProb := 1.0
+	roadProb := 0.0001
+	cornerProb := 0.0001
 
-	blankTile2 := NewTile(
-		"blank",
-		LoadImage("tile/blank.png"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-	)
+	var probability float64
 
-	blankTile3 := NewTile(
-		"blank",
-		LoadImage("tile/blank.png"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-	)
+	blank := tilemap.TileTexture{
+		Texture: LoadImage("tile/blank.png"),
+		Edge:    tilemap.NewTileEdges("grass", "grass", "grass", "grass"),
+	}
+	probability = blankProb
+	blankTile := tilemap.NewTile(blank, probability)
 
-	blankTile4 := NewTile(
-		"blank",
-		LoadImage("tile/blank.png"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-	)
+	horizontalRoad := tilemap.TileTexture{
+		Texture: LoadImage("tile/horizontal.png"),
+		Edge:    tilemap.NewTileEdges("grass", "road", "grass", "road"),
+	}
+	probability = roadProb
+	horizontalRoadTile := tilemap.NewTile(horizontalRoad, probability)
 
-	blankTile5 := NewTile(
-		"blank",
-		LoadImage("tile/blank.png"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-	)
+	verticalRoad := tilemap.TileTexture{
+		Texture: LoadImage("tile/vertical.png"),
+		Edge:    tilemap.NewTileEdges("road", "grass", "road", "grass"),
+	}
+	probability = roadProb
+	verticalRoadTile := tilemap.NewTile(verticalRoad, probability)
 
-	blankTile6 := NewTile(
-		"blank",
-		LoadImage("tile/blank.png"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-	)
+	bottomLeftRoad := tilemap.TileTexture{
+		Texture: LoadImage("tile/bottom_left.png"),
+		Edge:    tilemap.NewTileEdges("grass", "grass", "road", "road"),
+	}
+	probability = cornerProb
+	bottomLeftRoadTile := tilemap.NewTile(bottomLeftRoad, probability)
 
-	blankTile7 := NewTile(
-		"blank",
-		LoadImage("tile/blank.png"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-	)
+	bottomRightRoad := tilemap.TileTexture{
+		Texture: LoadImage("tile/bottom_right.png"),
+		Edge:    tilemap.NewTileEdges("grass", "road", "road", "grass"),
+	}
+	probability = cornerProb
+	bottomRightRoadTile := tilemap.NewTile(bottomRightRoad, probability)
 
-	blankTile8 := NewTile(
-		"blank",
-		LoadImage("tile/blank.png"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-	)
+	topLeftRoad := tilemap.TileTexture{
+		Texture: LoadImage("tile/top_left.png"),
+		Edge:    tilemap.NewTileEdges("road", "grass", "grass", "road"),
+	}
+	probability = cornerProb
+	topLeftRoadTile := tilemap.NewTile(topLeftRoad, probability)
 
-	blankTile9 := NewTile(
-		"blank",
-		LoadImage("tile/blank.png"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-	)
+	topRightRoad := tilemap.TileTexture{
+		Texture: LoadImage("tile/top_right.png"),
+		Edge:    tilemap.NewTileEdges("road", "road", "grass", "grass"),
+	}
+	probability = cornerProb
+	topRightRoadTile := tilemap.NewTile(topRightRoad, probability)
 
-	blankTile10 := NewTile(
-		"blank",
-		LoadImage("tile/blank.png"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-	)
-
-	horizontalRoadTile1 := NewTile(
-		"horizontal-road",
-		LoadImage("tile/horizontal.png"),
-		NewEdge("grass"),
-		NewEdge("road"),
-		NewEdge("grass"),
-		NewEdge("road"),
-	)
-
-	horizontalRoadTile2 := NewTile(
-		"horizontal-road",
-		LoadImage("tile/horizontal.png"),
-		NewEdge("grass"),
-		NewEdge("road"),
-		NewEdge("grass"),
-		NewEdge("road"),
-	)
-
-	horizontalRoadTile3 := NewTile(
-		"horizontal-road",
-		LoadImage("tile/horizontal.png"),
-		NewEdge("grass"),
-		NewEdge("road"),
-		NewEdge("grass"),
-		NewEdge("road"),
-	)
-
-	horizontalRoadTile4 := NewTile(
-		"horizontal-road",
-		LoadImage("tile/horizontal.png"),
-		NewEdge("grass"),
-		NewEdge("road"),
-		NewEdge("grass"),
-		NewEdge("road"),
-	)
-
-	horizontalRoadTile5 := NewTile(
-		"horizontal-road",
-		LoadImage("tile/horizontal.png"),
-		NewEdge("grass"),
-		NewEdge("road"),
-		NewEdge("grass"),
-		NewEdge("road"),
-	)
-
-	verticalRoadTile1 := NewTile(
-		"vertical-road",
-		LoadImage("tile/vertical.png"),
-		NewEdge("road"),
-		NewEdge("grass"),
-		NewEdge("road"),
-		NewEdge("grass"),
-	)
-
-	verticalRoadTile2 := NewTile(
-		"vertical-road",
-		LoadImage("tile/vertical.png"),
-		NewEdge("road"),
-		NewEdge("grass"),
-		NewEdge("road"),
-		NewEdge("grass"),
-	)
-
-	verticalRoadTile3 := NewTile(
-		"vertical-road",
-		LoadImage("tile/vertical.png"),
-		NewEdge("road"),
-		NewEdge("grass"),
-		NewEdge("road"),
-		NewEdge("grass"),
-	)
-
-	verticalRoadTile4 := NewTile(
-		"vertical-road",
-		LoadImage("tile/vertical.png"),
-		NewEdge("road"),
-		NewEdge("grass"),
-		NewEdge("road"),
-		NewEdge("grass"),
-	)
-
-	verticalRoadTile5 := NewTile(
-		"vertical-road",
-		LoadImage("tile/vertical.png"),
-		NewEdge("road"),
-		NewEdge("grass"),
-		NewEdge("road"),
-		NewEdge("grass"),
-	)
-
-	bottomLeftRoadTile := NewTile(
-		"bottom-left-road",
-		LoadImage("tile/bottom_left.png"),
-		NewEdge("grass"),
-		NewEdge("road"),
-		NewEdge("road"),
-		NewEdge("grass"),
-	)
-
-	bottomRightRoadTile := NewTile(
-		"bottom-right-road",
-		LoadImage("tile/bottom_right.png"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-		NewEdge("road"),
-		NewEdge("road"),
-	)
-
-	topLeftRoadTile := NewTile(
-		"top-left-road",
-		LoadImage("tile/top_left.png"),
-		NewEdge("road"),
-		NewEdge("road"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-	)
-
-	topRightRoadTile := NewTile(
-		"top-right-road",
-		LoadImage("tile/top_right.png"),
-		NewEdge("road"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-		NewEdge("road"),
-	)
-
-	tiles := []*Tile{
-		&blankTile1,
-		&blankTile2,
-		&blankTile3,
-		&blankTile4,
-		&blankTile5,
-		&blankTile6,
-		&blankTile7,
-		&blankTile8,
-		&blankTile9,
-		&blankTile10,
-		&horizontalRoadTile1,
-		&horizontalRoadTile2,
-		&horizontalRoadTile3,
-		&horizontalRoadTile4,
-		&horizontalRoadTile5,
-		&verticalRoadTile1,
-		&verticalRoadTile2,
-		&verticalRoadTile3,
-		&verticalRoadTile4,
-		&verticalRoadTile5,
+	tiles := []*tilemap.Tile{
+		&blankTile,
+		&horizontalRoadTile,
+		&verticalRoadTile,
 		&bottomLeftRoadTile,
 		&bottomRightRoadTile,
 		&topLeftRoadTile,
 		&topRightRoadTile,
-	}
-
-	return tiles
-}
-
-func LoadTiles() []*Tile {
-	// grassBottomLeftTopRight := NewTile(
-	// 	"grass-dirt-path-tl-br",
-	// 	LoadImage("tile/cozy-farm/grass_bottom_left_top_right.png"),
-	// 	NewEdge("sand-grass"),
-	// 	NewEdge("grass-sand"),
-	// 	NewEdge("sand-grass"),
-	// 	NewEdge("grass-sand"),
-	// )
-
-	grassBottomLeft := NewTile(
-		"grass-bottom-left",
-		LoadImage("tile/cozy-farm/grass_bottom_left.png"),
-		NewEdge("sand"),
-		NewEdge("sand"),
-		NewEdge("grass-sand"),
-		NewEdge("sand-grass"),
-	)
-
-	grassBottomRight := NewTile(
-		"grass-bottom-right",
-		LoadImage("tile/cozy-farm/grass_bottom_right.png"),
-		NewEdge("sand"),
-		NewEdge("sand-grass"),
-		NewEdge("sand-grass"),
-		NewEdge("sand"),
-	)
-
-	grassBottom := NewTile(
-		"grass-bottom",
-		LoadImage("tile/cozy-farm/grass_bottom.png"),
-		NewEdge("sand"),
-		NewEdge("sand-grass"),
-		NewEdge("grass"),
-		NewEdge("sand-grass"),
-	)
-
-	grassLeft := NewTile(
-		"grass-left",
-		LoadImage("tile/cozy-farm/grass_left.png"),
-		NewEdge("grass-sand"),
-		NewEdge("sand"),
-		NewEdge("grass-sand"),
-		NewEdge("grass"),
-	)
-
-	grassRight := NewTile(
-		"grass-right",
-		LoadImage("tile/cozy-farm/grass_right.png"),
-		NewEdge("sand-grass"),
-		NewEdge("grass"),
-		NewEdge("sand-grass"),
-		NewEdge("sand"),
-	)
-
-	// grassTopLeftBottomRight := NewTile(
-	// 	"grass-top-left-bottom-right",
-	// 	LoadImage("tile/cozy-farm/grass_top_left_bottom_right.png"),
-	// 	NewEdge("grass-sand"),
-	// 	NewEdge("sand-grass"),
-	// 	NewEdge("sand-grass"),
-	// 	NewEdge("grass-sand"),
-	// )
-
-	grassTopLeft := NewTile(
-		"grass-top-left",
-		LoadImage("tile/cozy-farm/grass_top_left.png"),
-		NewEdge("grass-sand"),
-		NewEdge("sand"),
-		NewEdge("sand"),
-		NewEdge("grass-sand"),
-	)
-
-	grassTopRight := NewTile(
-		"grass-top-right",
-		LoadImage("tile/cozy-farm/grass_top_right.png"),
-		NewEdge("sand-grass"),
-		NewEdge("grass-sand"),
-		NewEdge("sand"),
-		NewEdge("sand"),
-	)
-
-	grassTop := NewTile(
-		"grass-top",
-		LoadImage("tile/cozy-farm/grass_top.png"),
-		NewEdge("grass"),
-		NewEdge("grass-sand"),
-		NewEdge("sand"),
-		NewEdge("grass-sand"),
-	)
-
-	grass1 := NewTile(
-		"grass",
-		LoadImage("tile/cozy-farm/grass.png"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-	)
-
-	grass2 := NewTile(
-		"grass",
-		LoadImage("tile/cozy-farm/grass.png"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-	)
-
-	grass3 := NewTile(
-		"grass",
-		LoadImage("tile/cozy-farm/grass.png"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-	)
-
-	grass4 := NewTile(
-		"grass",
-		LoadImage("tile/cozy-farm/grass.png"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-	)
-
-	grass5 := NewTile(
-		"grass",
-		LoadImage("tile/cozy-farm/grass.png"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-	)
-
-	grass6 := NewTile(
-		"grass",
-		LoadImage("tile/cozy-farm/grass.png"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-	)
-
-	grass7 := NewTile(
-		"grass",
-		LoadImage("tile/cozy-farm/grass.png"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-	)
-
-	grass8 := NewTile(
-		"grass",
-		LoadImage("tile/cozy-farm/grass.png"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-	)
-
-	grass9 := NewTile(
-		"grass",
-		LoadImage("tile/cozy-farm/grass.png"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-	)
-
-	grass10 := NewTile(
-		"grass",
-		LoadImage("tile/cozy-farm/grass.png"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-		NewEdge("grass"),
-	)
-	// sandBottomLeft := NewTile(
-	// 	"sand-bottom-left",
-	// 	LoadImage("tile/cozy-farm/sand_bottom_left.png"),
-	// 	NewEdge("grass"),
-	// 	NewEdge("grass"),
-	// 	NewEdge("sand-grass"),
-	// 	NewEdge("grass-sand"),
-	// )
-
-	// sandBottomRight := NewTile(
-	// 	"sand-bottom-right",
-	// 	LoadImage("tile/cozy-farm/sand_bottom_right.png"),
-	// 	NewEdge("grass"),
-	// 	NewEdge("grass-sand"),
-	// 	NewEdge("grass-sand"),
-	// 	NewEdge("grass"),
-	// )
-
-	// sandTopLeft := NewTile(
-	// 	"sand-top-left",
-	// 	LoadImage("tile/cozy-farm/sand_top_left.png"),
-	// 	NewEdge("sand-grass"),
-	// 	NewEdge("grass"),
-	// 	NewEdge("grass"),
-	// 	NewEdge("sand-grass"),
-	// )
-
-	// sandTopRight := NewTile(
-	// 	"sand-top-right",
-	// 	LoadImage("tile/cozy-farm/sand_top_right.png"),
-	// 	NewEdge("grass-sand"),
-	// 	NewEdge("sand-grass"),
-	// 	NewEdge("grass"),
-	// 	NewEdge("grass"),
-	// )
-
-	// sand := NewTile(
-	// 	"sand",
-	// 	LoadImage("tile/cozy-farm/sand.png"),
-	// 	NewEdge("sand"),
-	// 	NewEdge("sand"),
-	// 	NewEdge("sand"),
-	// 	NewEdge("sand"),
-	// )
-
-	tiles := []*Tile{
-		&grassBottomLeft,
-		&grassBottomRight,
-		&grassBottom,
-		&grassLeft,
-		&grassRight,
-		&grassTopLeft,
-		&grassTopRight,
-		&grassTop,
-		&grass1,
-		&grass2,
-		&grass3,
-		&grass4,
-		&grass5,
-		&grass6,
-		&grass7,
-		&grass8,
-		&grass9,
-		&grass10,
-		// &sandBottomLeft,
-		// &sandBottomRight,
-		// &sandTopLeft,
-		// &sandTopRight,
-		// &sand,
 	}
 
 	return tiles
