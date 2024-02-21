@@ -30,8 +30,8 @@ func LoadImage(path string) *ebiten.Image {
 
 func LoadTestTiles() []*tilemap.Tile {
 	blankProb := 1.0
-	roadProb := 0.0001
-	cornerProb := 0.0001
+	roadProb := 0.001
+	cornerProb := 0.001
 
 	var probability float64
 

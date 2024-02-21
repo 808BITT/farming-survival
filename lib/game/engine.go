@@ -6,6 +6,7 @@ import (
 	"fs/lib/db"
 	"fs/lib/entity"
 	"fs/lib/wfc"
+	"image/color"
 	"log"
 	"math/rand"
 
@@ -21,12 +22,13 @@ func init() {
 }
 
 type Engine struct {
-	screenWidth   int
-	screenHeight  int
-	Db            *db.Database
-	Entities      *entity.Manager
-	TileMap       *TileMap
-	CollapseArray *wfc.CollapseArray2d
+	ViewportX    float64
+	ViewportY    float64
+	ScreenWidth  float64
+	ScreenHeight float64
+	Db           *db.Database
+	Entities     *entity.Manager
+	TileMap      *wfc.CollapseArray2d
 }
 
 type TileMap struct {
@@ -39,9 +41,9 @@ func NewEngine() *Engine {
 	tiles := assets.LoadTestTiles()
 
 	ebiten.SetFullscreen(true)
-	width, height := 1920*2, 1080*2
+	width, height := 1920.0, 1080.0
 
-	wa := wfc.NewCollapseArray2d(width/16, height/16, tiles)
+	wa := wfc.NewCollapseArray2d(int(width/16), int(height/16), tiles)
 	for {
 		x, y, err := wa.Iterate()
 		if err != nil {
@@ -52,10 +54,25 @@ func NewEngine() *Engine {
 		}
 	}
 
+	em := entity.NewManager()
+	player := entity.NewEntity("Player", width/2, height/2, &color.RGBA{R: 255, G: 0, B: 0, A: 255})
+	player.SetSpeed(1.0)
+	em.AddEntity(player)
+
+	for i := 0; i < 100; i++ {
+		randomEnemy := entity.NewEntity("Enemy", float64(rand.Intn(1920)), float64(rand.Intn(1080)), &color.RGBA{R: 0, G: 255, B: 0, A: 255})
+		randomEnemy.SetSpeed(16.0)
+		em.AddEntity(randomEnemy)
+	}
+
 	return &Engine{
-		screenWidth:   width,
-		screenHeight:  height,
-		CollapseArray: wa,
+		Entities:     em,
+		Db:           db.NewDatabase("file:data/hh.db?cache=shared&mode=rwc"),
+		ScreenWidth:  width,
+		ScreenHeight: height,
+		ViewportX:    0,
+		ViewportY:    0,
+		TileMap:      wa,
 	}
 }
 
@@ -70,21 +87,28 @@ func (e *Engine) Update() error {
 		return errors.New("user quit")
 	}
 
-	// // if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
-	// _, _, err := e.CollapseArray.Iterate()
-	// if err != nil {
-	// 	// e.CollapseArray = wfc.NewCollapseArray2d(e.screenWidth/16, e.screenHeight/16, assets.LoadTiles())
-	// 	log.Println(err.Error())
-	// }
-	// // }
+	if ebiten.IsKeyPressed(ebiten.KeyW) {
+		e.Entities.MovePlayer(0, -1)
+	}
+	if ebiten.IsKeyPressed(ebiten.KeyS) {
+		e.Entities.MovePlayer(0, 1)
+	}
+	if ebiten.IsKeyPressed(ebiten.KeyA) {
+		e.Entities.MovePlayer(-1, 0)
+	}
+	if ebiten.IsKeyPressed(ebiten.KeyD) {
+		e.Entities.MovePlayer(1, 0)
+	}
+
+	e.Entities.Update()
 
 	return nil
 }
 
 func (e *Engine) Draw(screen *ebiten.Image) {
-	for y := 0; y < e.screenHeight/16; y++ {
-		for x := 0; x < e.screenWidth/16; x++ {
-			tile, err := e.CollapseArray.GetTile(x, y)
+	for y := int(e.ViewportY / 16); y < int(e.ScreenHeight/16); y++ {
+		for x := int(e.ViewportX / 16); x < int(e.ScreenWidth/16); x++ {
+			tile, err := e.TileMap.GetTile(x, y)
 			if err != nil {
 				continue
 			}
@@ -93,10 +117,12 @@ func (e *Engine) Draw(screen *ebiten.Image) {
 			screen.DrawImage(tile.Type.Texture, op)
 		}
 	}
+
+	e.Entities.Draw(screen)
 }
 
 func (e *Engine) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
-	return e.screenWidth, e.screenHeight
+	return int(e.ScreenWidth), int(e.ScreenHeight)
 }
 
 func NewTileMap(width, height int) *TileMap {
