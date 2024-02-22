@@ -173,7 +173,7 @@ func (wa *CollapseArray2d) UpdatePossible(x, y int) error {
 	if wa.Tile[y][x].Tile != nil {
 		if x > 0 { // update west
 			if wa.Tile[y][x-1].Tile == nil {
-				err := wa.updateNeighborPossible(x-1, y, wa.Tile[y][x].Tile.Type.Edge.West(), "east")
+				err := wa.updateNeighborPossible(x-1, y, wa.Tile[y][x].Tile.Texture.Edge.West(), "east")
 				if err != nil {
 					return err
 				}
@@ -182,7 +182,7 @@ func (wa *CollapseArray2d) UpdatePossible(x, y int) error {
 
 		if x < wa.Width()-1 { // update east
 			if wa.Tile[y][x+1].Tile == nil {
-				err := wa.updateNeighborPossible(x+1, y, wa.Tile[y][x].Tile.Type.Edge.East(), "west")
+				err := wa.updateNeighborPossible(x+1, y, wa.Tile[y][x].Tile.Texture.Edge.East(), "west")
 				if err != nil {
 					return err
 				}
@@ -191,7 +191,7 @@ func (wa *CollapseArray2d) UpdatePossible(x, y int) error {
 
 		if y > 0 { // update north
 			if wa.Tile[y-1][x].Tile == nil {
-				err := wa.updateNeighborPossible(x, y-1, wa.Tile[y][x].Tile.Type.Edge.North(), "south")
+				err := wa.updateNeighborPossible(x, y-1, wa.Tile[y][x].Tile.Texture.Edge.North(), "south")
 				if err != nil {
 					return err
 				}
@@ -200,7 +200,7 @@ func (wa *CollapseArray2d) UpdatePossible(x, y int) error {
 
 		if y < wa.Height()-1 { // update south
 			if wa.Tile[y+1][x].Tile == nil {
-				err := wa.updateNeighborPossible(x, y+1, wa.Tile[y][x].Tile.Type.Edge.South(), "north")
+				err := wa.updateNeighborPossible(x, y+1, wa.Tile[y][x].Tile.Texture.Edge.South(), "north")
 				if err != nil {
 					return err
 				}
@@ -220,13 +220,13 @@ func (ca *CollapseArray2d) updateNeighborPossible(x, y int, otherEdge string, ne
 		// Compare the edge of the neighbor to the edge of the collapsed tile in the compare direction
 		switch neighborDir {
 		case "east":
-			matchingEdge = tile.Type.Edge.East()
+			matchingEdge = tile.Texture.Edge.East()
 		case "west":
-			matchingEdge = tile.Type.Edge.West()
+			matchingEdge = tile.Texture.Edge.West()
 		case "north":
-			matchingEdge = tile.Type.Edge.North()
+			matchingEdge = tile.Texture.Edge.North()
 		case "south":
-			matchingEdge = tile.Type.Edge.South()
+			matchingEdge = tile.Texture.Edge.South()
 		}
 		if matchingEdge == otherEdge {
 			stillPossible = true

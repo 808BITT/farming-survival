@@ -7,19 +7,19 @@ import (
 type Tile struct {
 	Id          uuid.UUID
 	Name        string
-	Type        TileTexture
+	Texture     TileTexture
 	Width       int
 	Height      int
 	Probability float64
 }
 
-func NewTile(tileType TileTexture, probability float64) Tile {
+func NewTile(tt TileTexture, p float64) Tile {
 	return Tile{
 		Id:          uuid.New(),
-		Type:        tileType,
-		Width:       tileType.Texture.Bounds().Dx(),
-		Height:      tileType.Texture.Bounds().Dy(),
-		Probability: probability,
+		Texture:     tt,
+		Width:       tt.Img.Bounds().Dx(),
+		Height:      tt.Img.Bounds().Dy(),
+		Probability: p,
 	}
 }
 

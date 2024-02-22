@@ -114,7 +114,7 @@ func (e *Engine) Draw(screen *ebiten.Image) {
 			}
 			op := &ebiten.DrawImageOptions{}
 			op.GeoM.Translate(float64(x*16), float64(y*16))
-			screen.DrawImage(tile.Type.Texture, op)
+			screen.DrawImage(tile.Texture.Img, op)
 		}
 	}
 
