@@ -5,6 +5,6 @@ import (
 )
 
 func main() {
-	e := game.NewEngine()
+	e := game.NewEngine(1920, 1080)
 	e.Run()
 }

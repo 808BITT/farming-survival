@@ -3,159 +3,161 @@ package game
 import (
 	"errors"
 	"fs/lib/assets"
-	"fs/lib/db"
-	"fs/lib/entity"
-	"fs/lib/wfc"
-	"image/color"
 	"log"
-	"math/rand"
+	"strconv"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
 func init() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
-	ebiten.SetFullscreen(false)
-	ebiten.SetWindowSize(1920, 1080)
-	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 }
+
+type EngineState int
+
+const (
+	Menu EngineState = iota
+	Loading
+	GameLoop
+	Paused
+	Saving
+)
 
 type Engine struct {
-	ViewportX    float64
-	ViewportY    float64
-	ScreenWidth  float64
-	ScreenHeight float64
-	Db           *db.Database
-	Entities     *entity.Manager
-	TileMap      *wfc.CollapseArray2d
+	State    EngineState
+	Screen   *Screen
+	TileSize int
+	Tiles    []*Tile
 }
 
-type TileMap struct {
-	Width  int
-	Height int
-	Tiles  [][]int
-}
+func NewEngine(w, h int) *Engine {
+	ebiten.SetWindowSize(1920, 1080)
+	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
+	ebiten.SetCursorShape(ebiten.CursorShapePointer)
+	ebiten.SetScreenClearedEveryFrame(true)
+	ebiten.SetWindowClosingHandled(true)
+	ebiten.SetRunnableOnUnfocused(true)
+	ebiten.SetWindowDecorated(true)
+	ebiten.SetWindowTitle("Idk...")
+	ebiten.SetVsyncEnabled(true)
+	ebiten.SetFullscreen(false)
 
-func NewEngine() *Engine {
-	tiles := assets.LoadTestTiles()
-
-	ebiten.SetFullscreen(true)
-	width, height := 1920.0, 1080.0
-
-	wa := wfc.NewCollapseArray2d(int(width/16), int(height/16), tiles)
-	for {
-		x, y, err := wa.Iterate()
-		if err != nil {
-			log.Println(err.Error())
-		}
-		if x == -1 && y == -1 {
-			break
-		}
-	}
-
-	em := entity.NewManager()
-	player := entity.NewEntity("Player", width/2, height/2, &color.RGBA{R: 255, G: 0, B: 0, A: 255})
-	player.SetSpeed(1.0)
-	em.AddEntity(player)
-
-	for i := 0; i < 100; i++ {
-		randomEnemy := entity.NewEntity("Enemy", float64(rand.Intn(1920)), float64(rand.Intn(1080)), &color.RGBA{R: 0, G: 255, B: 0, A: 255})
-		randomEnemy.SetSpeed(16.0)
-		em.AddEntity(randomEnemy)
-	}
-
+	screen := NewScreen(float64(w), float64(h), true)
 	return &Engine{
-		Entities:     em,
-		Db:           db.NewDatabase("file:data/hh.db?cache=shared&mode=rwc"),
-		ScreenWidth:  width,
-		ScreenHeight: height,
-		ViewportX:    0,
-		ViewportY:    0,
-		TileMap:      wa,
+		State:    GameLoop,
+		Screen:   screen,
+		Tiles:    []*Tile{},
+		TileSize: 16,
 	}
 }
 
 func (e *Engine) Run() {
+	worldBorderWidth := int(e.Screen.Dim.Width / float64(e.TileSize) / 2)
+	worldBorderHeight := int(e.Screen.Dim.Height / float64(e.TileSize) / 2)
+	tilemapWidth := 200
+	tilemapHeight := 100
+
+	log.Println("World border width:", worldBorderWidth)
+	log.Println("World border height:", worldBorderHeight)
+
+	for y := 0; y < 2*worldBorderHeight+tilemapHeight; y++ {
+		for x := 0; x < 2*worldBorderWidth+tilemapWidth; x++ {
+			if x < worldBorderWidth || x > worldBorderWidth+tilemapWidth-1 || y < worldBorderHeight || y > worldBorderHeight+tilemapHeight-1 {
+				tile := NewTile(x*e.TileSize, y*e.TileSize, e.TileSize, e.TileSize, assets.LoadImage("tile/world_border.png"))
+				e.Tiles = append(e.Tiles, tile)
+				continue
+			}
+
+			tile := NewTile(x*e.TileSize, y*e.TileSize, e.TileSize, e.TileSize, assets.LoadImage("tile/grass.png"))
+			e.Tiles = append(e.Tiles, tile)
+		}
+	}
+
+	// os.Exit(0)
+
 	if err := ebiten.RunGame(e); err != nil {
+		if err.Error() == "user requested to quit" {
+			return
+		}
 		log.Fatal(err)
 	}
 }
 
 func (e *Engine) Update() error {
 	if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
-		return errors.New("user quit")
+		return errors.New("user requested to quit")
+	}
+
+	if inpututil.IsKeyJustPressed(ebiten.KeyF) {
+		ebiten.SetFullscreen(!ebiten.IsFullscreen())
 	}
 
 	if ebiten.IsKeyPressed(ebiten.KeyW) {
-		e.Entities.MovePlayer(0, -1)
-	}
-	if ebiten.IsKeyPressed(ebiten.KeyS) {
-		e.Entities.MovePlayer(0, 1)
-	}
-	if ebiten.IsKeyPressed(ebiten.KeyA) {
-		e.Entities.MovePlayer(-1, 0)
-	}
-	if ebiten.IsKeyPressed(ebiten.KeyD) {
-		e.Entities.MovePlayer(1, 0)
+		e.MoveScreen(0, 1)
 	}
 
-	e.Entities.Update()
+	if ebiten.IsKeyPressed(ebiten.KeyA) {
+		e.MoveScreen(1, 0)
+	}
+
+	if ebiten.IsKeyPressed(ebiten.KeyS) {
+		e.MoveScreen(0, 1)
+	}
+
+	if ebiten.IsKeyPressed(ebiten.KeyD) {
+		e.MoveScreen(1, 0)
+	}
+
+	// var wg sync.WaitGroup
+	// for _, boid := range e.Boids {
+	// 	wg.Add(1)
+	// 	go func(b *Boid) {
+	// 		defer wg.Done()
+	// 		targetHit := b.Update(e.BoidTarget, e.Boids)
+	// 		if targetHit {
+	// 			randX, randY := rand.Float64()*e.Screen.Width-25, rand.Float64()*e.Screen.Height-25
+	// 			e.BoidTarget = phys.NewVec2(randX, randY)
+	// 		}
+	// 	}(boid)
+	// }
+	// wg.Wait()
 
 	return nil
 }
 
 func (e *Engine) Draw(screen *ebiten.Image) {
-	for y := int(e.ViewportY / 16); y < int(e.ScreenHeight/16); y++ {
-		for x := int(e.ViewportX / 16); x < int(e.ScreenWidth/16); x++ {
-			tile, err := e.TileMap.GetTile(x, y)
-			if err != nil {
-				continue
-			}
-			op := &ebiten.DrawImageOptions{}
-			op.GeoM.Translate(float64(x*16), float64(y*16))
-			screen.DrawImage(tile.Texture.Img, op)
-		}
+	visibleTiles := GetVisibleTiles(e.Screen, e.Tiles)
+	for _, tile := range visibleTiles {
+		tile.Draw(screen)
 	}
 
-	e.Entities.Draw(screen)
+	debugPanel := ebiten.NewImage(50, 20)
+	ebitenutil.DebugPrint(debugPanel, "FPS: "+strconv.Itoa(int(ebiten.ActualFPS())))
+	drawOptions := &ebiten.DrawImageOptions{}
+	drawOptions.GeoM.Scale(3, 3)
+	drawOptions.GeoM.Translate(0, 0)
+	screen.DrawImage(debugPanel, drawOptions)
 }
 
 func (e *Engine) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
-	return int(e.ScreenWidth), int(e.ScreenHeight)
+	return int(e.Screen.Dim.Width), int(e.Screen.Dim.Height)
 }
 
-func NewTileMap(width, height int) *TileMap {
-	tm := &TileMap{
-		Width:  width,
-		Height: height,
-		Tiles:  GenerateRandomTileMap(width, height),
-	}
-	return tm
-}
-
-func GenerateRandomTileMap(width, height int) [][]int {
-	tiles := make([][]int, width)
-	for x := 0; x < width; x++ {
-		tiles[x] = make([]int, height)
-		for y := 0; y < height; y++ {
-			tiles[x][y] = 0
+func GetVisibleTiles(screen *Screen, tiles []*Tile) []*Tile {
+	visibleTiles := []*Tile{}
+	for _, tile := range tiles {
+		t := tile
+		if t.Visible(int(screen.Dim.X), int(screen.Dim.Y), int(screen.Dim.Width), int(screen.Dim.Height)) {
+			visibleTiles = append(visibleTiles, t)
 		}
+
 	}
-	return tiles
+	return visibleTiles
 }
 
-var TileTypeMap = map[int]string{
-	0: "Blue_X_16",
-	1: "Green_X_16",
-	2: "Orange_X_16",
-	3: "Purple_X_16",
-}
-
-type TileConstraint struct {
-	AllowedNeighbors map[string][]int // "north", "south", "east", "west"
-}
-
-func RandomInt(min, max int) int {
-	return min + rand.Intn(max-min)
+func (e *Engine) MoveScreen(x, y int) {
+	e.Screen.Dim.X += float64(x)
+	e.Screen.Dim.Y += float64(y)
 }
